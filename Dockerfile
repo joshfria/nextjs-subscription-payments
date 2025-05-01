@@ -1,5 +1,5 @@
 FROM node:18-alpine
-
+ENV NEXT_TELEMETRY_DISABLED=1
 WORKDIR /app
 
 # Copy package files and install dependencies
@@ -15,6 +15,7 @@ RUN npm run build
 # Set production environment
 ENV NODE_ENV=production
 ENV PORT=3000
+
 
 EXPOSE 3000
 
