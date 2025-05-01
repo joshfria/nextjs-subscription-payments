@@ -4,7 +4,7 @@ FROM node:18-alpine AS base
 FROM base AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 COPY . .
 
 # Environment variables must be present at build time
