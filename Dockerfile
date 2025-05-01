@@ -1,34 +1,22 @@
-FROM node:18-alpine AS base
+FROM node:18-alpine
 
-# Step 1: Set up dependencies and build the app
-FROM base AS builder
-ENV NEXT_TELEMETRY_DISABLED=1
 WORKDIR /app
-COPY package*.json ./
+
+# Copy package files and install dependencies
+COPY package.json ./
 RUN npm install
+
+# Copy application code
 COPY . .
 
-# Environment variables must be present at build time
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
-
-# Build Next.js
+# Build the application
 RUN npm run build
 
-# Step 2: Production image, copy all the files and run next
-FROM base AS runner
-WORKDIR /app
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-USER nextjs
-
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Set production environment
+ENV NODE_ENV=production
+ENV PORT=3000
 
 EXPOSE 3000
-ENV PORT=3000
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
 
-CMD ["node", "server.js"]
+# Start the application
+CMD ["npm", "start"]
